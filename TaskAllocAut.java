@@ -36,19 +36,9 @@ public class TaskAllocAut {
 		return shortestPath;
 	}
 	
-	public static char[] getPathEvents(String[] shortestPaths) {
-		char[] pathEvents = new char[shortestPaths.length];
-		
-		for(String path : shortestPaths) {
-			for (int j = 0; j < path.length(); j++) {}
-				//pathEvents[j] = path[j];
-			
-		}
-		
-		return pathEvents;
-	}
-	
-	/***Generate action set with robots******/
+	/* Generate action set with robots:
+	 * Transform the composite event (robotID, event)
+	 * into a single letter in the Alphabet */
 	public static List<Action> getActionSet(List<char[][]> robotSet){
 		List<Action> actionSet = new ArrayList<Action>();
 		int id = 0;
@@ -67,29 +57,13 @@ public class TaskAllocAut {
 		return actionSet;
 	}
 
-	/***Find alphabet related action******/
+	/* Find alphabet related action*****
+	 * Given an action described by a single letter in Alphabet, *
+	 * locate robot's ID and event, i.e., where this action comes from */
 	public static Action actionInvMap(Transition autEvent, List<Action> actionSet){
 		int index = autEvent.getMin() - 'A';
 		
 		return actionSet.get(index);
-	}
-	
-	///***Return minimal cost action in same state action set******/
-	public static Action minAction(Set<Transition> autEventSet, List<Action> actionSet){
-		double minWeight = Double.POSITIVE_INFINITY;
-		Action miniAction = new Action();
-		Action invMapAction;
-		
-		for (Transition autEvent : autEventSet) {
-			invMapAction = actionInvMap(autEvent, actionSet);
-			
-			if (invMapAction.weight < minWeight) {
-				minWeight = invMapAction.weight;
-				miniAction = invMapAction;
-			}
-		}
-		
-		return miniAction;
 	}
 	
 	/***Get node index******/
@@ -103,7 +77,8 @@ public class TaskAllocAut {
 		return nodeIndex;
 	}
 	
-	/***Generate task automaton******/
+	/* Generate task automaton *****
+	 * Parallel compose two paths (strings) to generate an automaton */
 	public static Automaton makeTaskAut(String[] shortPaths, List<Action> actionSet) {
 		Automaton taskAutomaton = new Automaton();
 		boolean Initial = true;
@@ -120,7 +95,11 @@ public class TaskAllocAut {
 		return taskAutomaton;
 	}
 	
-	/***Generate task allocation automaton with robots******/
+	/* Generate task allocation automaton with robots: *
+	 * Given a task automaton and a set of robots with capabilities, 
+	 * replace task automaton events with new transition events (<robotID, event> 
+	 * described by a single letter). Consequently, a task allocation automaton is 
+	 * generated *****/
 	public static Automaton makeTaskAlloAut(Automaton taskAutomaton, List<Action> actionSet) {
 		Automaton taskAllocAut = new Automaton();
 		boolean Substitution = false;
@@ -148,7 +127,9 @@ public class TaskAllocAut {
 		return taskAllocAut;
 	}
 	
-	/***Search for optimal path******/
+	/* Search for optimal path*
+	 * Use Dijkstra searching algorithm to return the optimal task allocation solution
+	 * from the task allocation automaton (converted to a node-edge structure)*****/
 	public static List<Character> dijkstraSearch(Automaton taskAllocAut, List<Action> actionSet){
 		//initialize the graph		
 		int NodeSize = taskAllocAut.getStates().size();
@@ -191,7 +172,8 @@ public class TaskAllocAut {
 		return path;
 	}
 	
-	/***Map task allocation path into each robot******/
+	/* Map task allocation path into each robot: ****
+	 * Map the task allocation solution into each robot */
 	public static List<String> getTaskSpec(List<Character> taskPath, List<Action> taAutActs, int robotId) {
 		List<String> taskSpecStrs = new ArrayList<String>();
 		for (Character taskAlph: taskPath)
@@ -201,9 +183,9 @@ public class TaskAllocAut {
 		return taskSpecStrs;
 	}
 	
-	/***Optimal task allocation path******/
+	/* main program: Optimal task allocation path */
 	public static void main(String[] args) throws IOException{
-		// TODO Auto-generated method stub
+		
 		//RegExp regExpr = new RegExp("a(b|d)");
 		//RegExp regExpr = new RegExp("a(bd|db)|b(ad|da)|d(ab|ba)");
 		//////////RegExp regExpr = new RegExp(args[0]);
@@ -262,6 +244,7 @@ public class TaskAllocAut {
 
 }
 
+/* Define the robot action class */
 class Action {
 	char event;
 	int robotID;
